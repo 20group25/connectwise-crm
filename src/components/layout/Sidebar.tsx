@@ -10,17 +10,17 @@ import {
   ChevronLeft
 } from "lucide-react";
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 interface NavItem {
   icon: React.ElementType;
   label: string;
   href: string;
-  active?: boolean;
   badge?: number;
 }
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/", active: true },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Ticket, label: "Tickets", href: "/tickets", badge: 12 },
   { icon: Users, label: "Customers", href: "/customers" },
   { icon: Sparkles, label: "AI Insights", href: "/insights" },
@@ -34,6 +34,7 @@ const bottomItems: NavItem[] = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
 
   return (
     <aside 
@@ -66,14 +67,14 @@ export function Sidebar() {
       {/* Main Navigation */}
       <nav className="flex-1 p-3 space-y-1">
         {navItems.map((item) => (
-          <NavButton key={item.label} item={item} collapsed={collapsed} />
+          <NavButton key={item.label} item={item} collapsed={collapsed} active={location.pathname === item.href} />
         ))}
       </nav>
 
       {/* Bottom Navigation */}
       <div className="p-3 border-t border-sidebar-border space-y-1">
         {bottomItems.map((item) => (
-          <NavButton key={item.label} item={item} collapsed={collapsed} />
+          <NavButton key={item.label} item={item} collapsed={collapsed} active={location.pathname === item.href} />
         ))}
       </div>
 
@@ -101,14 +102,15 @@ export function Sidebar() {
   );
 }
 
-function NavButton({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+function NavButton({ item, collapsed, active }: { item: NavItem; collapsed: boolean; active: boolean }) {
   const Icon = item.icon;
   
   return (
-    <button
+    <Link
+      to={item.href}
       className={cn(
         "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
-        item.active 
+        active 
           ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm" 
           : "text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent",
         collapsed && "justify-center px-2"
@@ -125,6 +127,6 @@ function NavButton({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
           )}
         </>
       )}
-    </button>
+    </Link>
   );
 }
